@@ -1,11 +1,13 @@
 Package: porkysdad
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Porky's Dad - Useful functions, past and present.
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Henry Ferguson-Gow
+Maintainer: Henry Ferguson-Gow <henry.fergusongow@gmail.com>
+Description: This is mostly just a dumping ground for functions that fall into two broad groups - functions that make my daily workflow easier, and functions that I used repeatedly in previous small projects, but that don't belong in their own packages or never made it into their own packages. Named after one of Killdozer's greates hits - https://www.youtube.com/watch?v=3pY3ZsmomUo
 License: What license is it under?
 Encoding: UTF-8
+Imports:
+  rvest
 LazyData: true
+RoxygenNote: 6.0.1
