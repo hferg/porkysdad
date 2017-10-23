@@ -239,7 +239,7 @@ getAllData <- function(numrange, filename, reference_list = NULL, links = NULL,
     x <- findDatasets(numrange)
     print("Finding links...")
     l_file <- paste0(filename, "_links.csv")
-    l <- lapply(x$num, function(x) getLinks(x, reference_list = reference_list,
+    lapply(x$num, function(x) getLinks(x, reference_list = reference_list,
                                             filename = l_file, ...))
   } else {
     links <- links
