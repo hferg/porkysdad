@@ -10,6 +10,7 @@
 #' if that number leads to a dataset, or not. This basically just works off the
 #' fact that NBN records are all indexed at URLs with a varying number at the
 #' end.
+#' @name isDataset
 #' @param num The number to test.
 #' @export
 
@@ -43,6 +44,7 @@ isDataset <- function(num) {
 #' A shortcut function to apply isDataset over a large range of potential
 #' dataset numbers - returns a 2D array containing the numbers of actual
 #' datasets (i.e. excluding species lists and things that aren't anything).
+#' @name findDatasets
 #' @param nums A vector of numbers to test.
 #' @export
 
@@ -67,6 +69,7 @@ findDatasets <- function(nums) {
 #' repeat it over and over and over-query the servers at NBN. If a reference
 #' list of species names is provided then only species records that match that
 #' list will be saved.
+#' @name getLinks
 #' @param num A valid dataset number.
 #' @param reference_list A list of species names that links should be collected
 #' for.
@@ -126,6 +129,7 @@ getLinks <- function(num, reference_list, print = FALSE, filename) {
 #' if for whatever reason the connection is lost, we have all the data up to
 #' that point in time. It also has a built-in sleep every 1000 links (approx.
 #' half an hour) so that it stops querying the server for around ten minutes.
+#' @name getRecordData
 #' @param links Either a vector of links, or the filename of some links file
 #' that was written out by \link[porkysdad]{getLinks}.
 #' @param filename The name of the file that the data is going to be written
@@ -208,3 +212,47 @@ getRecordData <- function(links, filename) {
   }
 }
 
+################################################################################
+#' getAllData
+#'
+#' Wraps all the above functions together - give it a range of numbers and it
+#' will check if they are datasets, get the links then download the data.
+#' Can set to "links only" mode, which will download the links, but not get the
+#' data. To go hand in hand with this, it can also be supplied with some
+#' links, in which case it won't bother testing to see if a dataset is a dataset
+#' and so on...
+#' @name getAllData
+#' @param numrange A range of numbers to test to see if they are datasets, and
+#' get data from.
+#' @param filename The name of the file that the data is going to be written
+#' into - prefixes _links.csv for the links file.
+#' @param reference_list A list of species to get data for.
+#' @param links If specified then data is downloaded from these links.
+#' @param links_only If TRUE then no data is downloaded, but the links are
+#' gathered.
+#' @export
+
+getAllData <- function(numrange, filename, reference_list = NULL, links = NULL,
+                       links_only = FALSE, ...) {
+  if (is.null(links)) {
+    print("Checking datasets...")
+    x <- findDatasets(numrange)
+    print("Finding links...")
+    l_file <- paste0(filename, "_links.csv")
+    l <- lapply(x$num, function(x) getLinks(x, reference_list = reference_list,
+                                            filename = l_file, ...))
+  } else {
+    links <- links
+  }
+
+  if (!links_only) {
+    if (is.null(links)) {
+      links <- read.csv(paste0(filename, "_links.csv"))
+    } else {
+      links <- links
+    }
+    print("Gathering data...")
+    getRecordData(links, filename)
+    print("Done.")
+  }
+}
