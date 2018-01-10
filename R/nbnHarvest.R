@@ -17,7 +17,7 @@
 isDataset <- function(num) {
 
   dset_root <- "https://registry.nbnatlas.org/public/showDataResource/"
-  main <- rvest::read_html(paste0(dset_root, "dr", num))
+  main <- xml2::read_html(paste0(dset_root, "dr", num))
 
   hd <- rvest::html_nodes(main, "h1")
   typ <- rvest::html_nodes(main, ".section h3")
@@ -85,7 +85,7 @@ getLinks <- function(num, reference_list, print = FALSE, filename) {
   }
   recs_hub_url <- paste0("https://records.nbnatlas.org/occurrence/search?q=data_resource_uid:dr", num)
 
-  num_recs <- rvest::read_html(recs_hub_url) %>%
+  num_recs <- xml2::read_html(recs_hub_url) %>%
     rvest::html_nodes("#returnedText strong") %>%
     rvest::html_text()
 
@@ -100,7 +100,7 @@ getLinks <- function(num, reference_list, print = FALSE, filename) {
                        offset, "&max=",
                        max)
 
-    main <- rvest::read_html(recs_url)
+    main <- xml2::read_html(recs_url)
 
     links <- main %>%
       rvest::html_nodes(".occurrenceLink") %>%
@@ -140,7 +140,7 @@ getRecordData <- function(links, filename) {
   root_url <- "https://records.nbnatlas.org"
   for (i in seq_along(links)) {
     progress(i / length(links) * 100)
-    main <- rvest::read_html(paste0(root_url, links[i]))
+    main <- xml2::read_html(paste0(root_url, links[i]))
     ds <-  main %>%
       rvest::html_nodes("#datasetTable") %>%
       rvest::html_table()
