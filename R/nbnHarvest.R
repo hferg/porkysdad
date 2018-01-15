@@ -120,6 +120,75 @@ getLinks <- function(num, reference_list, print = FALSE, filename) {
 }
 
 ################################################################################
+#' getLinksAllRecords
+#' I just noticed that the link https://records.nbnatlas.org/occurrence/search
+#' seems to display all the records in the NBN - it seems like this might just
+#' be a better way to go about this - move through all the records collecting
+#' links for the species on the C4 list, and then download them. Since this
+#' misses out the step where I find out the dataset information I think that
+#' I need to make sure that I include this when downloading the actual data,
+#' but that's another function to go hand-in hand with this one.
+
+getLinksAllRecords <- function(range, filename, max) {
+  recs_hub_url <- paste0("https://records.nbnatlas.org/occurrence/search")
+
+  num_recs <- xml2::read_html(recs_hub_url) %>%
+    rvest::html_nodes("#returnedText strong") %>%
+    rvest::html_text()
+
+  num_recs <- as.numeric(gsub(",", "", num_recs))
+  breaks <- data.frame(offset = c(0:floor(num_recs / max)), max = max)
+  breaks$offset <- breaks$offset * breaks$max
+
+  for (i in min(range):max(range)) {
+    offset <- breaks$offset[i]
+    max <- breaks$max[i]
+    recs_url <- paste0("https://records.nbnatlas.org/occurrences/search?taxa=&q=&fq=&wkt=&lat=&lon=&radius=&dir=&sort=&offset=",
+                       offset, "&max=",
+                       max)
+
+    main <- xml2::read_html(recs_url)
+
+    links <- main %>%
+      rvest::html_nodes(".occurrenceLink") %>%
+      rvest::html_attr("href")
+
+    # Have to take the whole row, since some of these don't have a species - 
+    # just a genus or class or whatever...
+    info <- main %>%
+      rvest::html_nodes(".rowA") %>%
+      rvest::html_text()
+
+    # Extract species from this, if present.
+    getSpecies <- function(info, reference_list) {
+      if (grepl("species:", info)) {
+        x <- strsplit(info, "species:")[[1]][2]
+        x <- strsplit(gsub("\n", "", x), "\\|")[[1]][1]
+        # And now I need to remove the whitespace - but why does this seem hard?
+        # It seems like it's a type of whitespace that isn't a " ", although it 
+        # DOES strsplit on " " OK... Perhaps grepl is the answer here? Is the
+        # species name in the output of rvest (should match regardless of 
+        # whitespace).
+        res <- stringr::str_trim(x)
+      } else {
+        res <- FALSE
+      }
+      return(res)
+    }
+
+    species <- sapply(info, getSpecies)
+    # grepl doesn't work here.
+    if (!is.null(reference_list)) {
+      links <- links[tolower(species) %in% tolower(reference_list)]
+    }
+
+    ifelse (i == 1, h <- TRUE, h <- FALSE)
+    write.table(links, file = filename, sep = ",", append = !h, col.names = h, row.names = FALSE)
+  }
+}
+
+
+################################################################################
 #' getRecordData
 #'
 #' Takes a set of links, and downloads the data for the individual records at
