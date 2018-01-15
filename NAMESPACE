@@ -3,5 +3,6 @@
 export(findDatasets)
 export(getAllData)
 export(getLinks)
+export(getLinksAllRecords)
 export(getRecordData)
 export(isDataset)

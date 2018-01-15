@@ -128,8 +128,21 @@ getLinks <- function(num, reference_list, print = FALSE, filename) {
 #' misses out the step where I find out the dataset information I think that
 #' I need to make sure that I include this when downloading the actual data,
 #' but that's another function to go hand-in hand with this one.
+#' @name getLinksAllRecords
+#' @param range The number of batches to get links for (i.e. range = 2:7 will 
+#' get the second to seventh batches).
+#' @param batch_size The size of each batch of records to look at.
+#' @param filename This is the prefix of the filename that the saved links are
+#' written to.
+#' @param reference_list A list of species names that links should be collected
+#' for. Function compares the species in a record to the reference list, and 
+#' retains it if there is a match. Case doesn't matter... Should be a single 
+#' vector of binomials.
+#' @param print If TRUE then the dataset number if printed to screen - this is
+#' mostly just for testing...
+#' @export
 
-getLinksAllRecords <- function(range, filename, max) {
+getLinksAllRecords <- function(range, batch_size, filename, reference_list) {
   recs_hub_url <- paste0("https://records.nbnatlas.org/occurrence/search")
 
   num_recs <- xml2::read_html(recs_hub_url) %>%
@@ -137,15 +150,18 @@ getLinksAllRecords <- function(range, filename, max) {
     rvest::html_text()
 
   num_recs <- as.numeric(gsub(",", "", num_recs))
-  breaks <- data.frame(offset = c(0:floor(num_recs / max)), max = max)
-  breaks$offset <- breaks$offset * breaks$max
+  print(paste0("Total number of records: ", num_recs))
+  print(paste0("Batch size: ", batch_size))
+  print(paste0("Finding links from batches: ", range))
+  breaks <- data.frame(offset = c(0:floor(num_recs / batch_size)), batch_size = batch_size)
+  breaks$offset <- breaks$offset * breaks$batch_size
 
   for (i in min(range):max(range)) {
     offset <- breaks$offset[i]
-    max <- breaks$max[i]
+    batch_size <- breaks$batch_size[i]
     recs_url <- paste0("https://records.nbnatlas.org/occurrences/search?taxa=&q=&fq=&wkt=&lat=&lon=&radius=&dir=&sort=&offset=",
                        offset, "&max=",
-                       max)
+                       batch_size)
 
     main <- xml2::read_html(recs_url)
 
