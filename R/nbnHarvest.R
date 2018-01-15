@@ -164,11 +164,6 @@ getLinksAllRecords <- function(range, filename, max) {
       if (grepl("species:", info)) {
         x <- strsplit(info, "species:")[[1]][2]
         x <- strsplit(gsub("\n", "", x), "\\|")[[1]][1]
-        # And now I need to remove the whitespace - but why does this seem hard?
-        # It seems like it's a type of whitespace that isn't a " ", although it 
-        # DOES strsplit on " " OK... Perhaps grepl is the answer here? Is the
-        # species name in the output of rvest (should match regardless of 
-        # whitespace).
         res <- stringr::str_trim(x)
       } else {
         res <- FALSE
