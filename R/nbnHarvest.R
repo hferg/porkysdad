@@ -157,6 +157,7 @@ getLinksAllRecords <- function(range, batch_size, filename, reference_list) {
   breaks$offset <- breaks$offset * breaks$batch_size
 
   for (i in min(range):max(range)) {
+    print(paste0("Getting chunk: ", range[i]))
     offset <- breaks$offset[i]
     batch_size <- breaks$batch_size[i]
     recs_url <- paste0("https://records.nbnatlas.org/occurrences/search?taxa=&q=&fq=&wkt=&lat=&lon=&radius=&dir=&sort=&offset=",
