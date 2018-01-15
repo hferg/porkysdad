@@ -152,7 +152,7 @@ getLinksAllRecords <- function(range, batch_size, filename, reference_list) {
   num_recs <- as.numeric(gsub(",", "", num_recs))
   print(paste0("Total number of records: ", num_recs))
   print(paste0("Batch size: ", batch_size))
-  print(paste0("Finding links from batches: ", range))
+  print(paste0("Finding links from batches: ", paste(range, collapse = " ")))
   breaks <- data.frame(offset = c(0:floor(num_recs / batch_size)), batch_size = batch_size)
   breaks$offset <- breaks$offset * breaks$batch_size
 
@@ -191,10 +191,14 @@ getLinksAllRecords <- function(range, batch_size, filename, reference_list) {
     # grepl doesn't work here.
     if (!is.null(reference_list)) {
       links <- links[tolower(species) %in% tolower(reference_list)]
+      species <- species[tolower(species) %in% tolower(reference_list)]
+      links_keep <- data.frame(link = links, species = species)
+    } else {
+      links_keep <- data.frame(link = links, species = species)
     }
 
     ifelse (i == 1, h <- TRUE, h <- FALSE)
-    write.table(links, file = filename, sep = ",", append = !h, col.names = h, row.names = FALSE)
+    write.table(links_keep, file = filename, sep = ",", append = !h, col.names = h, row.names = FALSE)
   }
 }
 
