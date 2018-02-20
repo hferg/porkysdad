@@ -143,7 +143,7 @@ getLinks <- function(num, reference_list, print = FALSE, filename) {
 #' @export
 
 getLinksAllRecords <- function(range, batch_size, filename, reference_list) {
-  recs_hub_url <- paste0("https://records.nbnatlas.org/occurrence/search")
+  recs_hub_url <- paste0("https://records.nbnatlas.org/occurrence/search#tab_recordsView")
 
   num_recs <- xml2::read_html(recs_hub_url) %>%
     rvest::html_nodes("#returnedText strong") %>%
@@ -157,7 +157,7 @@ getLinksAllRecords <- function(range, batch_size, filename, reference_list) {
   breaks$offset <- breaks$offset * breaks$batch_size
 
   for (i in min(range):max(range)) {
-    print(paste0("Getting chunk: ", range[i]))
+    print(paste0("Getting chunk: ", range[i - min(range) + 1]))
     offset <- breaks$offset[i]
     batch_size <- breaks$batch_size[i]
     recs_url <- paste0("https://records.nbnatlas.org/occurrences/search?taxa=&q=&fq=&wkt=&lat=&lon=&radius=&dir=&sort=&offset=",
@@ -194,6 +194,7 @@ getLinksAllRecords <- function(range, batch_size, filename, reference_list) {
       links <- links[tolower(species) %in% tolower(reference_list)]
       species <- species[tolower(species) %in% tolower(reference_list)]
       links_keep <- data.frame(link = links, species = species)
+      rownames(links_keep) <- NULL
     } else {
       links_keep <- data.frame(link = links, species = species)
     }
