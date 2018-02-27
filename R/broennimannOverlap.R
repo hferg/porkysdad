@@ -28,7 +28,7 @@ broennimannEcospat <- function(native_stack, invasive_stack,
   # an occurence yes/no column. Everywhere it ISN'T is a no.
 
   # make sure projections match.
-  if (sp::proj4string(native_stack) != proj4string(invasive_stack)) {
+  if (sp::proj4string(native_stack) != sp::proj4string(invasive_stack)) {
     stop("Projection of native and invasive stacks do not match.")
   }
 
@@ -173,19 +173,20 @@ broennimannEcospat <- function(native_stack, invasive_stack,
 # # climate data is x, y (coords), then the values are columns. Data for all
 # # sites of the study area (i.e. all pixels).
 # # first read in some climate data, and also just get the bee data (while I am
-# # at it...)
-# climate_root <- "/home/hfg/Documents/projects/advent/data/bioclim"
-# bioclim_now <- stack(paste0(climate_root, "/bioclim_now_cropped.grd"))
-# layers <- c("bio_1", "bio_4", "bio_5", "bio_13", "bio_15")
-# bioc <- bioclim_now[[which(names(bioclim_now) %in% layers)]]
-# native_stack <- invasive_stack <- bioc
+# # # at it...)
+climate_root <- "/home/hfg/Documents/projects/advent/data/bioclim"
+bioclim_now <- raster::stack(paste0(climate_root, "/bioclim_now_cropped.grd"))
+layers <- c("bio_1", "bio_4", "bio_5", "bio_13", "bio_15")
+bioc <- bioclim_now[[which(names(bioclim_now) %in% layers)]]
+native_stack <- invasive_stack <- bioc
 
-# # since these bees are at the same place clim a and clim b are the same.
+# since these bees are at the same place clim a and clim b are the same.
 
-# bees <- read.csv("/home/hfg/Documents/projects/advent/data/d1c/step_bumblebees/CANPOLIN_2014_05_13_ungrided.csv")
-# native_occ <- bees[bees$taxon == "Bombus lucorum", 4:3]
-# invasive_occ <- bees[bees$taxon == "Bombus monticola", 4:3]
-# colnames(native_occ) <- colnames(invasive_occ) <- c("x", "y")
+bees <- read.csv("/home/hfg/Documents/projects/advent/data/d1c/step_bumblebees/CANPOLIN_2014_05_13_ungrided.csv")
+native_occ <- bees[bees$taxon == "Bombus lucorum", 4:3]
+invasive_occ <- bees[bees$taxon == "Bombus monticola", 4:3]
+colnames(native_occ) <- colnames(invasive_occ) <- c("x", "y")
 
+x <- broennimannEcospat(native_stack, invasive_stack, native_occ, invasive_occ)
 
-# # Start with the functions that are provided in the ESM
+# # # Start with the functions that are provided in the ESM
