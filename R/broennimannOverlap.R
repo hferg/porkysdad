@@ -3,6 +3,7 @@
 #' 
 #' Takes raster layers and occurence data and fits the broennimann
 #' niche similarity, equivalency and overlap models.
+#' This is simply a wrapper to functions in the R package ecospat (https://cran.r-project.org/web/packages/ecospat/index.html)
 #' @param native_stack A raster stack of the environmental data for the 
 #' range of the native species.
 #' @param invasive_stack A raster stack of the environmental data for the
