@@ -180,13 +180,13 @@ layers <- c("bio_1", "bio_4", "bio_5", "bio_13", "bio_15")
 bioc <- bioclim_now[[which(names(bioclim_now) %in% layers)]]
 native_stack <- invasive_stack <- bioc
 
-# since these bees are at the same place clim a and clim b are the same.
+# # since these bees are at the same place clim a and clim b are the same.
 
 bees <- read.csv("/home/hfg/Documents/projects/advent/data/d1c/step_bumblebees/CANPOLIN_2014_05_13_ungrided.csv")
 native_occ <- bees[bees$taxon == "Bombus lucorum", 4:3]
 invasive_occ <- bees[bees$taxon == "Bombus monticola", 4:3]
 colnames(native_occ) <- colnames(invasive_occ) <- c("x", "y")
 
-x <- broennimannEcospat(native_stack, invasive_stack, native_occ, invasive_occ)
+# x <- broennimannEcospat(native_stack, invasive_stack, native_occ, invasive_occ)
 
 # # # Start with the functions that are provided in the ESM
